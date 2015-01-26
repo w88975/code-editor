@@ -7,6 +7,7 @@ Polymer({
     mode: 'htmlmixed',
     theme: 'zenburn',
     tabSize: 4,
+    indentUnit: 4,
     keyMap: 'sublime',
     lineNumbers: true,
     jshintError: "",
@@ -15,7 +16,7 @@ Polymer({
     filePath: "",
     uuid: "",
     dirty: false,
-    fontFamily: "Arial",
+    fontFamily: "DejaVu Sans Mono",
     setting: null,
 
     created: function () {
@@ -65,8 +66,12 @@ Polymer({
         }.bind(this);
 
         CodeMirror.commands.resetFontSize = function () {
-                this.fontSize = 12;
-            }.bind(this);
+            this.fontSize = 12;
+        }.bind(this);
+
+        CodeMirror.commands.autoComplete = function (cm) {
+            cm.showHint({hint: CodeMirror.hint.anyword});
+        }.bind(this);
 
         var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault;
 
@@ -75,12 +80,14 @@ Polymer({
         var increaseFontSize = (mac ? "Cmd" : "Ctrl") + "-=";
         var decreaseFontSize = (mac ? "Cmd" : "Ctrl") + "--";
         var resetFontSize = (mac ? "Cmd" : "Ctrl") + "-0";
+        var autoComplete = "Ctrl-Space";
         var extraKeys = {};
 
         extraKeys[autoformat] = "autoformat";
         extraKeys[increaseFontSize] = "increaseFontSize";
         extraKeys[decreaseFontSize] = "decreaseFontSize";
         extraKeys[resetFontSize] = "resetFontSize";
+        extraKeys[autoComplete] = "autoComplete";
 
         this.options = {
             value: this.value,
@@ -98,6 +105,7 @@ Polymer({
             showCursorWhenSelecting: true,
             keyMap: this.keyMap,
             extraKeys: extraKeys,
+            indentUnit: this.indentUnit,
             gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers","CodeMirror-foldgutter","breakpoints"],
         };
 
@@ -159,8 +167,6 @@ Polymer({
         if (this.mode === "javascript") {
             this.updateHints();
         }
-
-        // this.mirror.focus();
     },
 
     fontFamilyChanged: function () {
@@ -183,8 +189,13 @@ Polymer({
         this.mirror.setOption('theme', this.theme);
     },
 
+    indentUnitChanged: function () {
+        this.mirror.setOption("indentUnit",this.indentUnit);
+    },
+
     tabSizeChanged: function() {
         this.mirror.setOption('tabSize', this.tabSize);
+        this.indentUnit = this.tabSize;
     },
 
     lineNumbersChanged: function() {

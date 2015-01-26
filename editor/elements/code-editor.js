@@ -1,5 +1,4 @@
 var Fs = require("fire-fs");
-var Remote = require("remote");
 
 var keymaps = [
     "sublime",
@@ -130,10 +129,7 @@ Polymer({
     },
 
     updateTitle: function () {
-        var browserWindow = Remote.getCurrentWindow();
-        if ( browserWindow ) {
-            browserWindow.setTitle( this.url + (this.$.mirror.dirty ? "*" : "") );
-        }
+        document.title = this.url + (this.$.mirror.dirty ? "*" : "");
     },
 
     updateSize: function () {

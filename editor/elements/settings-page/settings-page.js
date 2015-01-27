@@ -77,7 +77,9 @@ Polymer({
 
         this.fonts = this.getFonts();
         this.$.fontSelect.options = this.fonts.map(function ( item ) {
-            return { name: item.family, value: item.postscriptName };
+            return {
+                name: item.family + ", " + item.style,
+                value: item.postscriptName };
         });
 
         this.$.fontSelect.options.push(cssFont);
@@ -118,7 +120,7 @@ Polymer({
         }
     },
 
-    DoneAction: function () {
+    doneAction: function () {
         this.hide = true;
     },
 

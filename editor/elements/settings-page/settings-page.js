@@ -41,6 +41,10 @@ var themes = [
     "zenburn"                 ,
 ];
 
+var cssFont = {
+    name: "DejaVu Sans Mono",value:"DejaVu Sans Mono"
+};
+
 Polymer({
     publish: {
         hide: true,
@@ -70,10 +74,13 @@ Polymer({
             return { name: item, value: item };
         });
 
+
         this.fonts = this.getFonts();
         this.$.fontSelect.options = this.fonts.map(function ( item ) {
             return { name: item.family, value: item.postscriptName };
         });
+
+        this.$.fontSelect.options.push(cssFont);
     },
 
     hideChanged: function () {

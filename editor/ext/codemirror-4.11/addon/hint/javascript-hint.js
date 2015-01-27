@@ -30,6 +30,9 @@
 
   function scriptHint(editor, keywords, getToken, options) {
     // Find the token at the cursor
+    // if (getToken.replace(/ /g,"") === ""){
+    //     return;
+    // }
     var cur = editor.getCursor(), token = getToken(editor, cur);
     if (/\b(?:string|comment)\b/.test(token.type)) return;
     token.state = CodeMirror.innerMode(editor.getMode(), token.state).state;
@@ -59,7 +62,13 @@
 
   function javascriptHint(editor, options) {
     return scriptHint(editor, javascriptKeywords,
-                      function (e, cur) {return e.getTokenAt(cur);},
+                      function (e, cur) {
+                          if (e.getTokenAt(cur).string.replace(/ /g,"") === "") {
+                              return "No matched";
+                          }else {
+                              return e.getTokenAt(cur);
+                          }
+                      },
                       options);
   };
   CodeMirror.registerHelper("hint", "javascript", javascriptHint);
@@ -93,7 +102,7 @@
                     "lastIndexOf every some filter forEach map reduce reduceRight ").split(" ");
   var funcProps = "prototype apply call bind".split(" ");
   var javascriptKeywords = ("break case catch continue debugger default delete do else false finally for function " +
-                  "if in instanceof new null return switch throw true try typeof var void while with").split(" ");
+                  "if in instanceof new null return switch throw true try typeof var void while with 测试").split(" ");
   var coffeescriptKeywords = ("and break catch class continue delete do else extends false finally for " +
                   "if in instanceof isnt new no not null of off on or return switch then throw true try typeof until void while with yes").split(" ");
 

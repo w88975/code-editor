@@ -18,6 +18,10 @@ Polymer({
     dirty: false,
     fontFamily: "DejaVu Sans Mono",
     setting: null,
+    autoComplete: true,
+
+    timeLock: false,
+    allowShowHint: false,
 
     created: function () {
         this.cursor = {
@@ -69,10 +73,6 @@ Polymer({
             this.fontSize = 12;
         }.bind(this);
 
-        CodeMirror.commands.autoComplete = function (cm) {
-            cm.showHint({hint: CodeMirror.hint.anyword});
-        }.bind(this);
-
         var mac = CodeMirror.keyMap.default == CodeMirror.keyMap.macDefault;
 
         var autoformat = (mac ? "Cmd" : "Ctrl") + "-O";
@@ -80,14 +80,12 @@ Polymer({
         var increaseFontSize = (mac ? "Cmd" : "Ctrl") + "-=";
         var decreaseFontSize = (mac ? "Cmd" : "Ctrl") + "--";
         var resetFontSize = (mac ? "Cmd" : "Ctrl") + "-0";
-        var autoComplete = "Ctrl-Space";
         var extraKeys = {};
 
         extraKeys[autoformat] = "autoformat";
         extraKeys[increaseFontSize] = "increaseFontSize";
         extraKeys[decreaseFontSize] = "decreaseFontSize";
         extraKeys[resetFontSize] = "resetFontSize";
-        extraKeys[autoComplete] = "autoComplete";
 
         this.options = {
             value: this.value,
@@ -106,6 +104,7 @@ Polymer({
             keyMap: this.keyMap,
             extraKeys: extraKeys,
             indentUnit: this.indentUnit,
+            completeSingle: false,
             gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers","CodeMirror-foldgutter","breakpoints"],
         };
 
@@ -113,11 +112,31 @@ Polymer({
         this.mirror = CodeMirror(this.shadowRoot,this.options);
 
         this.mirror.on('change',function () {
-            if (this.mode === "javascript") {
-                this.updateHints();
+            if (this.timeLock === false) {
+                if (this.mode === "javascript") {
+                    this.timeLock = true;
+                    var hintTime = setTimeout( function () {
+                        this.updateHints();
+                    }.bind(this), 500 );
+                }
             }
+
             this.dirty = true;
+            // NOTE: 这里这么做的原因是要屏蔽类似Cmd+S之类的保存去触发智能提示
+            if (this.allowShowHint === true && this.dirty === true && this.autoComplete === true){
+                var showHint = setTimeout( function () {
+                    this.mirror.showHint();
+                    this.allowShowHint = false;
+                }.bind(this), 300 );
+            }
+
             this.lineCount = this.mirror.lineCount();
+        }.bind(this));
+
+        this.mirror.on('keydown',function (target,event) {
+            if (event.keyCode >=65 && event.keyCode<=90 ||event.keyCode === 190){
+                this.allowShowHint = true;
+            }
         }.bind(this));
 
         this.mirror.on('cursorActivity',function () {
@@ -262,6 +281,7 @@ Polymer({
             else {
                 this.jshintError = "";
             }
+            this.timeLock = false;
         }.bind(this));
     },
 
@@ -272,6 +292,7 @@ Polymer({
             keyMap: this.keyMap,
             fontSize: this.fontSize,
             fontFamily: this.fontFamily,
+            autoComplete: this.autoComplete,
         };
 
         var configValue = JSON.stringify(config, null, 4);

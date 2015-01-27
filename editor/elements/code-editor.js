@@ -129,7 +129,10 @@ Polymer({
     },
 
     updateTitle: function () {
-        document.title = this.url + (this.$.mirror.dirty ? "*" : "");
+        var title = document.title;
+        if (title !== this.url + (this.$.mirror.dirty ? "*" : "")) {
+            document.title = this.url + (this.$.mirror.dirty ? "*" : "");
+        }
     },
 
     updateSize: function () {

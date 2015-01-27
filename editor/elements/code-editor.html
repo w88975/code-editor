@@ -33,9 +33,11 @@
             AutoFormat
         </fire-ui-button>
     </fire-ui-toolbar>
+
     <div id="codeArea">
         <code-mirror id="mirror"></code-mirror>
     </div>
+
     <span class="status-bar">
         <fire-ui-toolbar justify-between>
             <div flex-row>
@@ -70,6 +72,18 @@
             </div>
         </fire-ui-toolbar>
     </span>
+
+    <div id="loader" class="loader-mask {{showLoader ? '' : 'hide'}}" fit>
+        <div class="loader-wrapper">
+            <div class="spinner">
+                <div class="rect1"></div>
+                <div class="rect2"></div>
+                <div class="rect3"></div>
+                <div class="rect4"></div>
+                <div class="rect5"></div>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script type="text/javascript" src="code-editor.js"></script>

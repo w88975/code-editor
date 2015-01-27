@@ -10,41 +10,104 @@
     flex-direction: column
     flex-wrap: nowrap
     align-items: stretch
+}
 
-    .status-bar {
-        width: 100%
-        line-height: 20px
-        box-shadow:0 0 5px #000
-        z-index: 997
+.space{
+    width: 10px
+    height: 10px
+}
+
+.space-2{
+    width: 20px
+    height: 20px
+}
+
+.space-3{
+    width: 30px
+    height: 30px
+}
+
+.label {
+    color: gray
+}
+
+.jshint {
+    color: red
+}
+
+.status-bar {
+    width: 100%
+    line-height: 20px
+    box-shadow:0 0 5px #000
+    z-index: 5
+}
+
+.topbar {
+    box-shadow: 0 0 5px #000
+    z-index: 5
+    border-bottom-left-radius: 5px
+    border-bottom-right-radius: 5px
+}
+
+.loader-mask {
+    z-index: 10
+    vertical-align: top
+    text-align: center
+
+    background-color: black
+    opacity: 0.6
+
+    color: #ccc
+    font-family: sans-serif
+    font-size: 14px
+}
+.loader-mask.hide {
+    display: none
+}
+
+.loader-wrapper {
+    position: relative
+    height: 100%
+}
+
+.spinner {
+    position: relative
+    top: 50%
+    transform: translateY(-50%)
+}
+
+.spinner {
+    margin: auto
+    height: 30px
+    text-align: center
+    font-size: 10px
+}
+
+.spinner > div {
+    background-color: white
+    height: 100%
+    width: 10px
+    display: inline-block
+
+    -webkit-animation: stretchdelay 0.8s infinite ease-in-out
+}
+.spinner .rect2 {
+    -webkit-animation-delay: -0.7s
+}
+.spinner .rect3 {
+    -webkit-animation-delay: -0.6s
+}
+.spinner .rect4 {
+    -webkit-animation-delay: -0.5s
+}
+.spinner .rect5 {
+    -webkit-animation-delay: -0.4s
+}
+@keyframes stretchdelay {
+    0%, 40%, 100% {
+        -webkit-transform: scaleY(0.8)
     }
-
-    .space{
-        width: 10px
-        height: 10px
-    }
-
-    .space-2{
-        width: 20px
-        height: 20px
-    }
-
-    .space-3{
-        width: 30px
-        height: 30px
-    }
-
-    .label {
-        color: gray
-    }
-
-    .jshint {
-        color: red
-    }
-
-    .topbar {
-        box-shadow: 0 0 5px #000
-        z-index: 5
-        border-bottom-left-radius: 5px
-        border-bottom-right-radius: 5px
+    20% {
+        -webkit-transform: scaleY(1.4)
     }
 }

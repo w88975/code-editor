@@ -1,9 +1,8 @@
 var Fs = require("fire-fs");
 var Path = require('fire-path');
-var Remote = require("remote");
 
 Polymer({
-    value: null,
+    value: "",
     mode: 'htmlmixed',
     theme: 'zenburn',
     tabSize: 4,
@@ -13,12 +12,14 @@ Polymer({
     jshintError: "",
     lineCount: 0,
     fontSize: 12,
+    fontFamily: "DejaVu Sans Mono",
+    autoComplete: true,
+    setting: null,
+
     filePath: "",
     uuid: "",
+    initialLoad: false,
     dirty: false,
-    fontFamily: "DejaVu Sans Mono",
-    setting: null,
-    autoComplete: true,
 
     timeLock: false,
     allowShowHint: false,
@@ -30,26 +31,11 @@ Polymer({
         };
     },
 
-    ready: function () {
-        var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
-        this.settingPath = Path.join( projectPath, 'settings' ) + "/code-editor-settings.json";
-    },
-
-    domReady: function () {
-    },
-
     refresh: function() {
-        if ( this.mirror )
-            this.mirror.refresh();
-    },
+        if ( !this.codeMirror )
+            return;
 
-    valueChanged: function() {
-        if ( this.mirror ) {
-            this.mirror.setValue(this.value);
-        }
-        else {
-            this.createEditor();
-        }
+        this.codeMirror.refresh();
     },
 
     createEditor: function () {
@@ -108,12 +94,25 @@ Polymer({
             gutters: ["CodeMirror-linenumbers", "CodeMirror-lint-markers","CodeMirror-foldgutter","breakpoints"],
         };
 
-        // mirror initialize
-        this.mirror = CodeMirror(this.shadowRoot,this.options);
+        // codeMirror initialize
+        this.codeMirror = CodeMirror(this.shadowRoot,this.options);
 
-        this.mirror.on('change',function () {
-            if (this.timeLock === false) {
-                if (this.mode === "javascript") {
+        var codeMirrorStyle = this.shadowRoot.getElementsByClassName('CodeMirror')[0].style;
+        codeMirrorStyle.fontFamily = this.fontFamily;
+        codeMirrorStyle.fontSize = this.fontSize + "px";
+
+        this.codeMirror.on('change',function () {
+            if ( this.initialLoad ) {
+                this.codeMirror.getDoc().clearHistory();
+                this.initialLoad = false;
+            }
+            else {
+                this.dirty = true;
+            }
+            this.lineCount = this.codeMirror.lineCount();
+
+            if (this.mode === "javascript") {
+                if (this.timeLock === false) {
                     this.timeLock = true;
                     var hintTime = setTimeout( function () {
                         this.updateHints();
@@ -121,41 +120,30 @@ Polymer({
                 }
             }
 
-            this.dirty = true;
             // NOTE: 这里这么做的原因是要屏蔽类似Cmd+S之类的保存去触发智能提示
             if (this.allowShowHint === true && this.dirty === true && this.autoComplete === true){
                 var showHint = setTimeout( function () {
-                    this.mirror.showHint();
+                    this.codeMirror.showHint();
                     this.allowShowHint = false;
                 }.bind(this), 300 );
             }
-
-            this.lineCount = this.mirror.lineCount();
         }.bind(this));
 
-        this.mirror.on('keydown',function (target,event) {
+        this.codeMirror.on('keydown',function (target,event) {
             if (event.keyCode >=65 && event.keyCode<=90 ||event.keyCode === 190){
                 this.allowShowHint = true;
             }
         }.bind(this));
 
-        this.mirror.on('cursorActivity',function () {
-            this.cursor = this.mirror.getCursor();
+        this.codeMirror.on('cursorActivity',function () {
+            this.cursor = this.codeMirror.getCursor();
         }.bind(this));
 
-        // load config
-        this.loadConfig(function (err,settings) {
-            if (err) {
-                Fire.error(err.message);
-                return;
-            }
+        this.lineCount = this.codeMirror.lineCount();
+        this.detectTextMode();
+    },
 
-            if (settings) {
-                Fire.mixin(this,settings);
-            }
-        }.bind(this));
-        this.lineCount = this.mirror.lineCount();
-
+    detectTextMode: function () {
         switch (Path.extname(this.filePath).toLowerCase()) {
             case ".js" :
                 this.mode = "javascript";
@@ -188,37 +176,69 @@ Polymer({
         }
     },
 
+    valueChanged: function() {
+        if ( !this.codeMirror )
+            return;
+
+        this.codeMirror.setValue(this.value);
+    },
+
     fontFamilyChanged: function () {
+        if ( !this.codeMirror )
+            return;
+
         this.shadowRoot.getElementsByClassName('CodeMirror')[0].style.fontFamily = this.fontFamily;
     },
 
     keyMapChanged: function () {
-        this.mirror.setOption('keyMap', this.keyMap);
+        if ( !this.codeMirror )
+            return;
+
+        this.codeMirror.setOption('keyMap', this.keyMap);
     },
 
     modeChanged: function() {
-        this.mirror.setOption('mode', this.mode);
+        if ( !this.codeMirror )
+            return;
+
+        this.codeMirror.setOption('mode', this.mode);
     },
 
     fontSizeChanged: function () {
+        if ( !this.codeMirror )
+            return;
+
         this.shadowRoot.getElementsByClassName('CodeMirror')[0].style.fontSize = this.fontSize + "px";
     },
 
     themeChanged: function() {
-        this.mirror.setOption('theme', this.theme);
+        if ( !this.codeMirror )
+            return;
+
+        this.codeMirror.setOption('theme', this.theme);
     },
 
     indentUnitChanged: function () {
-        this.mirror.setOption("indentUnit",this.indentUnit);
+        if ( !this.codeMirror )
+            return;
+
+        this.codeMirror.setOption("indentUnit",this.indentUnit);
     },
 
     tabSizeChanged: function() {
-        this.mirror.setOption('tabSize', this.tabSize);
         this.indentUnit = this.tabSize;
+
+        if ( !this.codeMirror )
+            return;
+
+        this.codeMirror.setOption('tabSize', this.tabSize);
     },
 
     lineNumbersChanged: function() {
-        this.mirror.setOption('lineNumbers', this.lineNumbers);
+        if ( !this.codeMirror )
+            return;
+
+        this.codeMirror.setOption('lineNumbers', this.lineNumbers);
     },
 
     dirtyChanged: function () {
@@ -226,33 +246,47 @@ Polymer({
     },
 
     reloadAction: function () {
-        this.mirror.setValue(this.value);
+        if ( !this.codeMirror )
+            return;
+
+        this.codeMirror.setValue(this.value);
     },
 
     lineComment: function () {
-        var range = { from: this.mirror.getCursor(true), to: this.mirror.getCursor(false) };
-        this.mirror.lineComment(range.from, range.to);
+        if ( !this.codeMirror )
+            return;
+
+        var range = { from: this.codeMirror.getCursor(true), to: this.codeMirror.getCursor(false) };
+        this.codeMirror.lineComment(range.from, range.to);
     },
 
     autoFormat: function () {
+        if ( !this.codeMirror )
+            return;
+
         switch (this.mode) {
             case "javascript":
-                this.mirror.setValue(js_beautify(this.mirror.getValue(),this.tabSize,''));
-            break;
+                this.codeMirror.setValue(js_beautify(this.codeMirror.getValue(),this.tabSize,''));
+                break;
+
             case "css":
                 var options = {
                     indent: '    ',
                 };
-                this.mirror.setValue(cssbeautify(this.mirror.getValue(),options));
-            break;
+                this.codeMirror.setValue(cssbeautify(this.codeMirror.getValue(),options));
+                break;
+
             case "htmlmixed":
-                this.mirror.setValue(style_html(this.mirror.getValue(),this.tabSize,' ',80));
-            break;
+                this.codeMirror.setValue(style_html(this.codeMirror.getValue(),this.tabSize,' ',80));
+                break;
         }
     },
 
     save: function () {
-        Fs.writeFile(this.filePath, this.mirror.getValue(), 'utf8', function ( err ) {
+        if ( !this.codeMirror )
+            return;
+
+        Fs.writeFile(this.filePath, this.codeMirror.getValue(), 'utf8', function ( err ) {
             if ( err ) {
                 Fire.error( err.message );
                 return;
@@ -267,8 +301,11 @@ Polymer({
     },
 
     updateHints: function() {
-        this.mirror.operation(function(){
-            JSHINT(this.mirror.getValue());
+        if ( !this.codeMirror )
+            return;
+
+        this.codeMirror.operation(function(){
+            JSHINT(this.codeMirror.getValue());
             if (JSHINT.errors.length > 0) {
                 var errorMsg = "Jshint: [ line " +
                                JSHINT.errors[0].line +
@@ -283,44 +320,5 @@ Polymer({
             }
             this.timeLock = false;
         }.bind(this));
-    },
-
-    saveConfig: function () {
-        var config = {
-            theme: this.theme,
-            tabSize: this.tabSize,
-            keyMap: this.keyMap,
-            fontSize: this.fontSize,
-            fontFamily: this.fontFamily,
-            autoComplete: this.autoComplete,
-        };
-
-        var configValue = JSON.stringify(config, null, 4);
-        Fs.writeFile(this.settingPath, configValue, 'utf8', function ( err ) {
-            if ( err ) {
-                Fire.error( err.message );
-                return;
-            }
-        }.bind(this));
-    },
-
-    loadConfig: function (cb) {
-        var exists = Fs.existsSync(this.settingPath);
-        if (!exists) {
-            if (cb) cb();
-            return;
-        }
-
-        Fs.readFile(this.settingPath, 'utf8', function ( err, data ) {
-            try {
-                data = JSON.parse(data);
-                if (cb) cb( null, data );
-            }
-            catch (e) {
-                if (cb) cb(e);
-            }
-
-        });
-
     },
 });

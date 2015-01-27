@@ -1,4 +1,6 @@
 var Fs = require("fire-fs");
+var Path = require('fire-path');
+var Remote = require("remote");
 
 var keymaps = [
     "sublime",
@@ -83,10 +85,10 @@ Polymer({
                 url = pair[1];
             }
         }
+        var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
+        this.settingPath = Path.join( projectPath, 'settings' ) + "/code-editor-settings.json";
         this.url = url;
-
         this.updateSize();
-        this.loadFile();
 
         this.$.keymapSelect.options = keymaps.map(function ( item ) {
             return { name: item, value: item };
@@ -105,7 +107,7 @@ Polymer({
         }.bind(this));
 
         window.addEventListener('beforeunload', function () {
-            this.$.mirror.saveConfig();
+            this.saveConfig();
             if (this.$.mirror.dirty) {
                 var result = window.confirm(this.url + " was modified,do you want to save?");
                 if (result) {
@@ -113,6 +115,43 @@ Polymer({
                 }
             }
         }.bind(this));
+
+        // load config and then load the file
+        this.showLoading(true);
+        this.loadConfig(function ( err, settings ) {
+            if (err) {
+                Fire.error(err.message);
+                return;
+            }
+
+            if ( settings ) {
+                Fire.mixin(this.$.mirror,settings);
+            }
+
+            this.$.mirror.createEditor();
+
+            // start loading file
+            this.loadFile();
+        }.bind(this));
+    },
+
+    _loaderTimout: null,
+    showLoader: false,
+    showLoading: function ( show ) {
+        if ( show ) {
+            this.showLoader = show;
+        }
+        else {
+            if ( this.showLoader !== show ) {
+                if ( this._loaderTimout ) {
+                    clearTimeout(this._loaderTimout);
+                    this._loaderTimout = null;
+                }
+                this._loaderTimout = setTimeout( function () {
+                    this.showLoader = false;
+                }.bind(this), 500);
+            }
+        }
     },
 
     loadFile: function () {
@@ -120,12 +159,58 @@ Polymer({
 
         var fspath = Fire.AssetDB._fspath(this.url);
         var uuid = Fire.AssetDB.urlToUuid(this.url);
+
+        this.$.mirror.filePath = fspath;
+        this.$.mirror.uuid = uuid;
+        this.$.mirror.detectTextMode();
+
+        this.showLoading(true);
         Fs.readFile(fspath, 'utf8', function ( err, data ) {
+            this.$.mirror.initialLoad = true;
             this.$.mirror.value = data;
-            this.$.mirror.filePath = fspath;
-            this.$.mirror.uuid = uuid;
             this.$.mirror.setting = this.settingsPage;
+
+            this.showLoading(false);
         }.bind(this));
+    },
+
+    saveConfig: function () {
+        var settings = {
+            theme: this.$.mirror.theme,
+            tabSize: this.$.mirror.tabSize,
+            keyMap: this.$.mirror.keyMap,
+            fontSize: this.$.mirror.fontSize,
+            fontFamily: this.$.mirror.fontFamily,
+            autoComplete: this.$.mirror.autoComplete,
+        };
+
+        var settingsJson = JSON.stringify(settings, null, 2);
+        Fs.writeFile(this.settingPath, settingsJson, 'utf8', function ( err ) {
+            if ( err ) {
+                Fire.error( err.message );
+                return;
+            }
+        }.bind(this));
+    },
+
+    loadConfig: function (cb) {
+        var exists = Fs.existsSync(this.settingPath);
+        if (!exists) {
+            if (cb) cb();
+            return;
+        }
+
+        Fs.readFile(this.settingPath, 'utf8', function ( err, data ) {
+            try {
+                data = JSON.parse(data);
+            }
+            catch (e) {
+                if (cb) cb(e);
+            }
+
+            if (cb) cb( null, data );
+        });
+
     },
 
     updateTitle: function () {

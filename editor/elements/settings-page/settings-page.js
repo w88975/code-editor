@@ -50,10 +50,23 @@ Polymer({
         hide: true,
         config: null,
         fonts: null,
+        settings: null,
     },
 
-    create: function () {
-
+    domReady: function () {
+        this.settings = {
+            theme: this.config.theme,
+            tabSize: this.config.tabSize,
+            keyMap: this.config.keyMap,
+            fontSize: this.config.fontSize,
+            fontFamily: this.config.fontFamily,
+            autoComplete: this.config.autoComplete,
+        };
+        document.addEventListener('keydown',function (event) {
+            if (event.keyCode === 27) {
+                this.hide = true;
+            }
+        }.bind(this));
     },
 
     ready: function () {
@@ -64,6 +77,17 @@ Polymer({
         this.span.style.opacity = 0.5;
         this.span.style.zIndex = 998;
         this.span.style.background = 'black';
+
+        this.span.onclick = function () {
+            this.config.theme = this.settings.theme;
+            this.config.tabSize = this.settings.tabSize;
+            this.config.keyMap = this.settings.keyMap;
+            this.config.fontSize = this.settings.fontSize;
+            this.config.fontFamily = this.settings.fontFamily;
+            this.config.autoComplete = this.settings.autoComplete;
+            this.hide = true;
+        }.bind(this);
+
         document.body.appendChild(this.span);
 
         this.$.keymapSelect.options = keymaps.map(function ( item ) {
@@ -88,10 +112,10 @@ Polymer({
     hideChanged: function () {
         if (this.hide) {
             this.animate([
-                { marginTop: (this.config.getBoundingClientRect().height/2-100)+"px",width: "600px" },
-                { marginTop: "-400px",width: "0px"},
+                { marginTop: (this.config.getBoundingClientRect().height/2-100)+"px",width: "600px",opacity: 1/*,left: "-300px",height: "auto"*/},
+                { marginTop: (this.config.getBoundingClientRect().height/2-100)+"px",width: "600px",opacity: 0/*,left: "0px",height: "0px"*/},
                 ], {
-                    duration: 400
+                    duration: 300
                 });
             this.style.marginTop = "-400px";
             this.span.style.display = "none";
@@ -99,10 +123,10 @@ Polymer({
         else {
             this.span.style.display = "block";
             this.animate([
-                { marginTop: "-400px", width: "0px" },
-                { marginTop: (this.config.getBoundingClientRect().height/2-100)+"px",width: "600px"},
+                { marginTop: (this.config.getBoundingClientRect().height/2-100)+"px", width: "600px",opacity: 0/*,left: "0px",height: "0px" */},
+                { marginTop: (this.config.getBoundingClientRect().height/2-100)+"px",width: "600px",opacity: 1/*,left: "-300px",height: "auto"*/},
                 ], {
-                    duration: 400
+                    duration: 300
                 });
             this.style.marginTop = (this.config.getBoundingClientRect().height/2-100)+"px";
         }
@@ -122,6 +146,17 @@ Polymer({
 
     doneAction: function () {
         this.hide = true;
+    },
+
+    cancelAction: function () {
+        this.config.theme = this.settings.theme;
+        this.config.tabSize = this.settings.tabSize;
+        this.config.keyMap = this.settings.keyMap;
+        this.config.fontSize = this.settings.fontSize;
+        this.config.fontFamily = this.settings.fontFamily;
+        this.config.autoComplete = this.settings.autoComplete;
+        this.hide = true;
+
     },
 
     getFonts: function () {

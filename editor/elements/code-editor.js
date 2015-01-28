@@ -51,6 +51,7 @@ var modes = [
 ];
 
 Polymer({
+
     created: function () {
         this.ipc = new Fire.IpcListener();
         this.settingsPage = null;
@@ -172,6 +173,7 @@ Polymer({
 
             this.showLoading(false);
         }.bind(this));
+
     },
 
     saveConfig: function () {

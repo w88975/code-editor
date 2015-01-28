@@ -157,6 +157,9 @@ Polymer({
             case ".css" :
                 this.mode = "css";
                 break;
+            case ".styl" :
+                this.mode = "css";
+                break;
             case ".json" :
                 this.mode = "css";
                 break;

@@ -51,6 +51,7 @@ var modes = [
 ];
 
 Polymer({
+
     created: function () {
         this.ipc = new Fire.IpcListener();
         this.settingsPage = null;
@@ -172,10 +173,11 @@ Polymer({
 
             this.showLoading(false);
         }.bind(this));
+
     },
 
     saveConfig: function () {
-        var settings = {
+        this.settings = {
             theme: this.$.mirror.theme,
             tabSize: this.$.mirror.tabSize,
             keyMap: this.$.mirror.keyMap,
@@ -184,7 +186,7 @@ Polymer({
             autoComplete: this.$.mirror.autoComplete,
         };
 
-        var settingsJson = JSON.stringify(settings, null, 2);
+        var settingsJson = JSON.stringify(this.settings, null, 2);
         Fs.writeFile(this.settingPath, settingsJson, 'utf8', function ( err ) {
             if ( err ) {
                 Fire.error( err.message );

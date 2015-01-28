@@ -130,10 +130,10 @@ Polymer({
 
         this.codeMirror.on('keydown',function (target,event) {
             // NOTE: 屏蔽组合键触发showhint
-            if (event.ctrlKey || event.metaKey) {
+            if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
                 return;
             }
-            
+
             if (event.keyCode >=65 && event.keyCode<=90 ||event.keyCode === 190){
                 this.allowShowHint = true;
             }

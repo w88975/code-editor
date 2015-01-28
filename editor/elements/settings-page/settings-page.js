@@ -115,7 +115,7 @@ Polymer({
                 { marginTop: (this.config.getBoundingClientRect().height/2-100)+"px",width: "600px",opacity: 1/*,left: "-300px",height: "auto"*/},
                 { marginTop: (this.config.getBoundingClientRect().height/2-100)+"px",width: "600px",opacity: 0/*,left: "0px",height: "0px"*/},
                 ], {
-                    duration: 300
+                    duration: 200
                 });
             this.style.marginTop = "-400px";
             this.span.style.display = "none";
@@ -126,7 +126,7 @@ Polymer({
                 { marginTop: (this.config.getBoundingClientRect().height/2-100)+"px", width: "600px",opacity: 0/*,left: "0px",height: "0px" */},
                 { marginTop: (this.config.getBoundingClientRect().height/2-100)+"px",width: "600px",opacity: 1/*,left: "-300px",height: "auto"*/},
                 ], {
-                    duration: 300
+                    duration: 200
                 });
             this.style.marginTop = (this.config.getBoundingClientRect().height/2-100)+"px";
         }

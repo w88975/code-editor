@@ -70,6 +70,18 @@ Polymer({
                 }
             }
         }.bind(this) );
+
+        this.ipc.on('load:asset', function ( url ) {
+            if (this.$.mirror.dirty) {
+                var result = window.confirm(this.url + " was modified,do you want to save?");
+                if (result) {
+                    this.$.mirror.save();
+                }
+            }
+
+            this.url = url;
+            this.loadFile();
+        }.bind(this) );
     },
 
     detached: function () {
@@ -167,6 +179,7 @@ Polymer({
 
         this.showLoading(true);
         Fs.readFile(fspath, 'utf8', function ( err, data ) {
+            this.$.mirror.dirty = false;
             this.$.mirror.initialLoad = true;
             this.$.mirror.value = data;
             this.$.mirror.setting = this.settingsPage;

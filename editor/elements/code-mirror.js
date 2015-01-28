@@ -120,8 +120,7 @@ Polymer({
                 }
             }
 
-            // NOTE: 这里这么做的原因是要屏蔽类似Cmd+S之类的保存去触发智能提示
-            if (this.allowShowHint === true && this.dirty === true && this.autoComplete === true){
+            if (this.allowShowHint === true && this.autoComplete === true){
                 var showHint = setTimeout( function () {
                     this.codeMirror.showHint();
                     this.allowShowHint = false;
@@ -130,6 +129,11 @@ Polymer({
         }.bind(this));
 
         this.codeMirror.on('keydown',function (target,event) {
+            // NOTE: 屏蔽组合键触发showhint
+            if (event.ctrlKey || event.metaKey) {
+                return;
+            }
+            
             if (event.keyCode >=65 && event.keyCode<=90 ||event.keyCode === 190){
                 this.allowShowHint = true;
             }

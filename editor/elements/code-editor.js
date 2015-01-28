@@ -177,7 +177,7 @@ Polymer({
     },
 
     saveConfig: function () {
-        this.settings = {
+        var settings = {
             theme: this.$.mirror.theme,
             tabSize: this.$.mirror.tabSize,
             keyMap: this.$.mirror.keyMap,
@@ -186,7 +186,7 @@ Polymer({
             autoComplete: this.$.mirror.autoComplete,
         };
 
-        var settingsJson = JSON.stringify(this.settings, null, 2);
+        var settingsJson = JSON.stringify(settings, null, 2);
         Fs.writeFile(this.settingPath, settingsJson, 'utf8', function ( err ) {
             if ( err ) {
                 Fire.error( err.message );

@@ -35,17 +35,17 @@
             </div>
             <div flex-row class="prop" on-focusin="{{focusedAction}}" on-focusout="{{blurAction}}">
                 <fire-ui-label flex-1>Auto Complete:</fire-ui-label>
-                <fire-ui-checkbox value="{{config.autoComplete}}" ></fire-ui-checkbox>
+                <fire-ui-checkbox flex-2 value="{{config.autoComplete}}" ></fire-ui-checkbox>
             </div>
 
         </div>
     </div>
     <div class="bar">
         <fire-ui-button on-click="{{doneAction}}">
-            <li class="fa fa-check">Done</li>
+            <i class="fa fa-check"></i>Done
         </fire-ui-button>
         <fire-ui-button on-click="{{cancelAction}}">
-            <li class="fa fa-close">Cancel</li>
+            <i class="fa fa-close"></i>Cancel
         </fire-ui-button>
     </div>
 </template>

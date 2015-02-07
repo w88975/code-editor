@@ -71,7 +71,7 @@ Polymer({
             }
         }.bind(this) );
 
-        this.ipc.on('load:asset', function ( url ) {
+        this.ipc.on('asset:edit', function ( url ) {
             if (this.$.mirror.dirty) {
                 var result = window.confirm(this.url + " was modified,do you want to save?");
                 if (result) {

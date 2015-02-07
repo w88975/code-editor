@@ -5,7 +5,7 @@ module.exports = {
             if ( ['.js', '.json', '.xml', '.html', '.css','.styl','.htm'].indexOf(ext.toLowerCase()) !== -1 ) {
                 if ( context.openedWindows.length > 0 ) {
                     var firstWindow = context.openedWindows[0];
-                    firstWindow.sendToPage( 'load:asset', url );
+                    firstWindow.sendToPage( 'asset:edit', url );
                     firstWindow.focus();
                 }
                 else {

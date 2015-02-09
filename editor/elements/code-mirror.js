@@ -16,7 +16,7 @@ Polymer({
     autoComplete: true,
     setting: null,
 
-    filePath: "",
+    fspath: "",
     uuid: "",
     initialLoad: false,
     dirty: false,
@@ -148,7 +148,7 @@ Polymer({
     },
 
     detectTextMode: function () {
-        switch (Path.extname(this.filePath).toLowerCase()) {
+        switch (Path.extname(this.fspath).toLowerCase()) {
             case ".js" :
                 this.mode = "javascript";
                 break;
@@ -293,7 +293,7 @@ Polymer({
         if ( !this.codeMirror )
             return;
 
-        Fs.writeFile(this.filePath, this.codeMirror.getValue(), 'utf8', function ( err ) {
+        Fs.writeFile(this.fspath, this.codeMirror.getValue(), 'utf8', function ( err ) {
             if ( err ) {
                 Fire.error( err.message );
                 return;

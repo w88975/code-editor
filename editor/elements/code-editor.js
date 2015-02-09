@@ -63,15 +63,15 @@ Polymer({
             if ( name === 'code-editor' )
                 return;
 
-            if ( this.$.mirror.uuid === uuid ) {
+            if ( this.uuid === uuid ) {
                 var result = window.confirm(this.url + " was modified, do you want to reload?");
                 if (result) {
-                    this.loadFile();
+                    this.load(this.uuid);
                 }
             }
         }.bind(this) );
 
-        this.ipc.on('asset:edit', function ( url ) {
+        this.ipc.on('asset:edit', function ( uuid ) {
             if (this.$.mirror.dirty) {
                 var result = window.confirm(this.url + " was modified,do you want to save?");
                 if (result) {
@@ -79,8 +79,7 @@ Polymer({
                 }
             }
 
-            this.url = url;
-            this.loadFile();
+            this.load(uuid);
         }.bind(this) );
     },
 
@@ -89,18 +88,17 @@ Polymer({
     },
 
     ready: function () {
-        var url = "";
+        var uuid = "";
         var queryString = decodeURIComponent(location.search.substr(1));
         var queryList = queryString.split('&');
         for ( var i = 0; i < queryList.length; ++i ) {
             var pair = queryList[i].split("=");
-            if ( pair[0] === "url" ) {
-                url = pair[1];
+            if ( pair[0] === "uuid" ) {
+                uuid = pair[1];
             }
         }
         var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
         this.settingPath = Path.join( projectPath, 'settings' ) + "/code-editor-settings.json";
-        this.url = url;
         this.updateSize();
 
         this.$.keymapSelect.options = keymaps.map(function ( item ) {
@@ -144,7 +142,7 @@ Polymer({
             this.$.mirror.createEditor();
 
             // start loading file
-            this.loadFile();
+            this.load(uuid);
         }.bind(this));
     },
 
@@ -167,13 +165,14 @@ Polymer({
         }
     },
 
-    loadFile: function () {
+    load: function ( uuid ) {
+        this.uuid = uuid;
+        this.url = Fire.AssetDB.uuidToUrl(uuid);
+
         this.updateTitle();
 
         var fspath = Fire.AssetDB._fspath(this.url);
-        var uuid = Fire.AssetDB.urlToUuid(this.url);
-
-        this.$.mirror.filePath = fspath;
+        this.$.mirror.fspath = fspath;
         this.$.mirror.uuid = uuid;
         this.$.mirror.detectTextMode();
 

@@ -136,7 +136,7 @@ Polymer({
             }
 
             if ( settings ) {
-                Fire.mixin(this.$.mirror,settings);
+                Fire.JS.mixin(this.$.mirror,settings);
             }
 
             this.$.mirror.createEditor();

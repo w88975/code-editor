@@ -88,15 +88,7 @@ Polymer({
     },
 
     ready: function () {
-        var uuid = "";
-        var queryString = decodeURIComponent(location.search.substr(1));
-        var queryList = queryString.split('&');
-        for ( var i = 0; i < queryList.length; ++i ) {
-            var pair = queryList[i].split("=");
-            if ( pair[0] === "uuid" ) {
-                uuid = pair[1];
-            }
-        }
+        var uuid = Fire.argv.uuid;
         var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
         this.settingPath = Path.join( projectPath, 'settings' ) + "/code-editor-settings.json";
         this.updateSize();

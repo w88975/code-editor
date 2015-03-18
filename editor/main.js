@@ -14,7 +14,7 @@ module.exports = {
                 }
                 else {
                     context.openWindow('code-editor', {
-                        query: {uuid: uuid},
+                        uuid: uuid,
                     });
                 }
             }

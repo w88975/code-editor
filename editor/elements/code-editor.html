@@ -51,6 +51,7 @@
     name="code-editor"
     constructor="CodeEditor"
     on-dirty-changed="{{updateTitle}}"
+    on-open="{{ipcOpen}}"
     >
 <template>
     <link rel="stylesheet" href="code-editor.css">

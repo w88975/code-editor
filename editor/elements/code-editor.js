@@ -103,15 +103,27 @@ Polymer({
             this.updateSize();
         }.bind(this));
 
-        window.addEventListener('beforeunload', function () {
+        window.onbeforeunload = function ( event ) {
             this.saveConfig();
-            if (this.$.mirror.dirty) {
-                var result = window.confirm(this.url + " was modified,do you want to save?");
-                if (result) {
+
+            if ( this.$.mirror.dirty ) {
+                var res = this.confirmSave();
+                switch ( res ) {
+                // save
+                case 0:
                     this.$.mirror.save();
+                    return true;
+
+                // cancel
+                case 1:
+                    return false;
+
+                // don't save
+                case 2:
+                    return true;
                 }
             }
-        }.bind(this));
+        }.bind(this);
 
         var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
         this.settingPath = Path.join( projectPath, 'settings' ) + "/code-editor-settings.json";
@@ -137,6 +149,30 @@ Polymer({
             var uuid = this.argv.uuid;
             this.load(uuid);
         }.bind(this));
+    },
+
+    ipcOpen: function ( event ) {
+        var uuid = event.detail.uuid;
+
+        if (this.$.mirror.dirty) {
+            var res = this.confirmSave();
+            switch ( res ) {
+            // save
+            case 0:
+                this.$.mirror.save();
+                break;
+
+            // cancel
+            case 1:
+                return;
+
+            // don't save
+            case 2:
+                break;
+            }
+        }
+
+        this.load(uuid);
     },
 
     _loaderTimout: null,
@@ -218,6 +254,17 @@ Polymer({
             if (cb) cb( null, data );
         });
 
+    },
+
+    confirmSave: function () {
+        var dialog = Remote.require('dialog');
+        return dialog.showMessageBox( Remote.getCurrentWindow(), {
+            type: "warning",
+            buttons: ["Save","Cancel","Don't Save"],
+            title: "Save Confirm",
+            message: Fire.AssetDB.uuidToUrl(this.uuid) + " has changed, do you want to save it?",
+            detail: "Your changes will be lost if you close this item without saving."
+        } );
     },
 
     updateTitle: function () {

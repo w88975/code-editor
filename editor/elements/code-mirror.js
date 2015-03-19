@@ -301,8 +301,10 @@ Polymer({
 
             this.dirty = false;
 
-            // TEMP HACK
-            Fire.sendToAll('asset:changed', this.uuid, 'code-editor');
+            //
+            Fire.sendToPanel( 'code-editor', 'default', 'asset:changed', {
+                uuid: this.uuid
+            });
             Fire.sendToAll('asset-db:synced');
         }.bind(this));
     },

@@ -58,7 +58,9 @@ Polymer({
     },
 
     attached: function () {
-        this.ipc.on('asset:changed', function ( uuid, name ) {
+        this.ipc.on('asset:changed', function ( detail ) {
+            var uuid = detail.uuid;
+
             // HACK
             if ( name === 'code-editor' )
                 return;

@@ -53,48 +53,40 @@ var modes = [
 Polymer({
 
     created: function () {
-        this.ipc = new Fire.IpcListener();
         this.settingsPage = null;
     },
 
     attached: function () {
-        this.ipc.on('asset:changed', function ( detail ) {
-            var uuid = detail.uuid;
+        // TODO:
 
-            // HACK
-            if ( name === 'code-editor' )
-                return;
+        // this.ipc.on('asset:changed', function ( detail ) {
+        //     var uuid = detail.uuid;
 
-            if ( this.uuid === uuid ) {
-                var result = window.confirm(this.url + " was modified, do you want to reload?");
-                if (result) {
-                    this.load(this.uuid);
-                }
-            }
-        }.bind(this) );
+        //     // HACK
+        //     if ( name === 'code-editor' )
+        //         return;
 
-        this.ipc.on('asset:edit', function ( uuid ) {
-            if (this.$.mirror.dirty) {
-                var result = window.confirm(this.url + " was modified,do you want to save?");
-                if (result) {
-                    this.$.mirror.save();
-                }
-            }
+        //     if ( this.uuid === uuid ) {
+        //         var result = window.confirm(this.url + " was modified, do you want to reload?");
+        //         if (result) {
+        //             this.load(this.uuid);
+        //         }
+        //     }
+        // }.bind(this) );
 
-            this.load(uuid);
-        }.bind(this) );
-    },
+        // this.ipc.on('asset:edit', function ( uuid ) {
+        //     if (this.$.mirror.dirty) {
+        //         var result = window.confirm(this.url + " was modified,do you want to save?");
+        //         if (result) {
+        //             this.$.mirror.save();
+        //         }
+        //     }
 
-    detached: function () {
-        this.ipc.clear();
+        //     this.load(uuid);
+        // }.bind(this) );
     },
 
     ready: function () {
-        var uuid = Fire.argv.uuid;
-        var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
-        this.settingPath = Path.join( projectPath, 'settings' ) + "/code-editor-settings.json";
-        this.updateSize();
-
         this.$.keymapSelect.options = keymaps.map(function ( item ) {
             return { name: item, value: item };
         });
@@ -121,6 +113,12 @@ Polymer({
             }
         }.bind(this));
 
+        var projectPath = Remote.getGlobal('FIRE_PROJECT_PATH');
+        this.settingPath = Path.join( projectPath, 'settings' ) + "/code-editor-settings.json";
+        this.updateSize();
+    },
+
+    domReady: function () {
         // load config and then load the file
         this.showLoading(true);
         this.loadConfig(function ( err, settings ) {
@@ -136,6 +134,7 @@ Polymer({
             this.$.mirror.createEditor();
 
             // start loading file
+            var uuid = this.argv.uuid;
             this.load(uuid);
         }.bind(this));
     },

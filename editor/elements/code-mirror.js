@@ -97,7 +97,7 @@ Polymer({
         // codeMirror initialize
         this.codeMirror = CodeMirror(this.shadowRoot,this.options);
 
-        var codeMirrorStyle = this.shadowRoot.getElementsByClassName('CodeMirror')[0].style;
+        var codeMirrorStyle = this.shadowRoot.querySelectorAll('.CodeMirror')[0].style;
         codeMirrorStyle.fontFamily = this.fontFamily;
         codeMirrorStyle.fontSize = this.fontSize + "px";
 
@@ -194,7 +194,7 @@ Polymer({
         if ( !this.codeMirror )
             return;
 
-        this.shadowRoot.getElementsByClassName('CodeMirror')[0].style.fontFamily = this.fontFamily;
+        this.shadowRoot.querySelectorAll('.CodeMirror')[0].style.fontFamily = this.fontFamily;
     },
 
     keyMapChanged: function () {
@@ -215,7 +215,7 @@ Polymer({
         if ( !this.codeMirror )
             return;
 
-        this.shadowRoot.getElementsByClassName('CodeMirror')[0].style.fontSize = this.fontSize + "px";
+        this.shadowRoot.querySelectorAll('.CodeMirror')[0].style.fontSize = this.fontSize + "px";
     },
 
     themeChanged: function() {

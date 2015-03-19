@@ -5,7 +5,7 @@
     "author": "KamiSama <1457434343@qq.com>",
     "fireball": {
         "main": "editor/main.js",
-        "windows": {
+        "panels": {
             "code-editor": {
                 "url": "editor/index.html",
                 "options": {

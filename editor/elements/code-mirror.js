@@ -302,7 +302,7 @@ Polymer({
             this.dirty = false;
 
             //
-            Fire.sendToPanel( 'code-editor', 'default', 'asset:changed', {
+            Fire.sendToAll('asset:changed', {
                 uuid: this.uuid
             });
             Fire.sendToAll('asset-db:synced');

@@ -13,7 +13,10 @@
                 "title": "Code Editor",
                 "width": 1200,
                 "height": 600,
-                "min-width": 400
+                "min-width": 400,
+                "messages": {
+                    "asset:changed": "asset-changed"
+                }
             }
         }
     }

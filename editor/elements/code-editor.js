@@ -56,36 +56,6 @@ Polymer({
         this.settingsPage = null;
     },
 
-    attached: function () {
-        // TODO:
-
-        // this.ipc.on('asset:changed', function ( detail ) {
-        //     var uuid = detail.uuid;
-
-        //     // HACK
-        //     if ( name === 'code-editor' )
-        //         return;
-
-        //     if ( this.uuid === uuid ) {
-        //         var result = window.confirm(this.url + " was modified, do you want to reload?");
-        //         if (result) {
-        //             this.load(this.uuid);
-        //         }
-        //     }
-        // }.bind(this) );
-
-        // this.ipc.on('asset:edit', function ( uuid ) {
-        //     if (this.$.mirror.dirty) {
-        //         var result = window.confirm(this.url + " was modified,do you want to save?");
-        //         if (result) {
-        //             this.$.mirror.save();
-        //         }
-        //     }
-
-        //     this.load(uuid);
-        // }.bind(this) );
-    },
-
     ready: function () {
         this.$.keymapSelect.options = keymaps.map(function ( item ) {
             return { name: item, value: item };
@@ -173,6 +143,34 @@ Polymer({
         }
 
         this.load(uuid);
+    },
+
+    ipcAssetChanged: function ( event ) {
+        var uuid = event.detail.uuid;
+        var outside = event.detail.outside;
+
+        if ( this.uuid !== uuid ) {
+            return;
+        }
+
+        // changed by myself
+        if ( !outside ) {
+            return;
+        }
+
+        //
+        var dialog = Remote.require('dialog');
+        var result = dialog.showMessageBox( Remote.getCurrentWindow(), {
+            type: "warning",
+            buttons: ["OK","Cancel"],
+            title: "Save Confirm",
+            message: Fire.AssetDB.uuidToUrl(this.uuid) + " was modified, do you want to reload?",
+            detail: "Your changes will be lost if you confirm reload."
+        } );
+
+        if ( result === 0 ) {
+            this.load(this.uuid);
+        }
     },
 
     _loaderTimout: null,
@@ -286,7 +284,6 @@ Polymer({
     },
 
     reloadAction: function () {
-        this.loadFile();
         this.$.mirror.reloadAction();
     },
 

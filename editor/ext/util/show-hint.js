@@ -1,11 +1,16 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
+var doc=document;
+var style=doc.createElement("style");
+style.innerHTML = ".CodeMirror-hints{position:absolute;z-index:10;overflow:hidden;list-style:none;margin:0;padding:4px;-webkit-box-shadow:2px 3px 5px rgba(0,0,0,.2);-moz-box-shadow:2px 3px 5px rgba(0,0,0,.2);box-shadow:2px 3px 5px rgba(0,0,0,.2);border:1px solid #333;background:#2a2a2a;font-size:80%;font-family:'DejaVu Sans Mono';max-height:20em;overflow-y:auto}li.CodeMirror-hint-active{background:#2865c7;color:#aaa}";
+doc.getElementsByTagName("head")[0].appendChild(style);
+
 (function(mod) {
     if (typeof exports == "object" && typeof module == "object") // CommonJS
-    mod(require("../codemirror-4.11/lib/codemirror"));
+    mod(require("../codemirror-5.0/lib/codemirror"));
     else if (typeof define == "function" && define.amd) // AMD
-    define(["../codemirror-4.11/lib/codemirror"], mod);
+    define(["../codemirror-5.0/lib/codemirror"], mod);
     else // Plain browser env
     mod(CodeMirror);
 })(function(CodeMirror) {

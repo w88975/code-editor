@@ -3,7 +3,31 @@
 
 var doc=document;
 var style=doc.createElement("style");
-style.innerHTML = ".CodeMirror-hints{position:absolute;z-index:10;overflow:hidden;list-style:none;margin:0;padding:4px;-webkit-box-shadow:2px 3px 5px rgba(0,0,0,.2);-moz-box-shadow:2px 3px 5px rgba(0,0,0,.2);box-shadow:2px 3px 5px rgba(0,0,0,.2);border:1px solid #333;background:#2a2a2a;font-size:80%;font-family:'DejaVu Sans Mono';max-height:20em;overflow-y:auto}li.CodeMirror-hint-active{background:#2865c7;color:#aaa}";
+style.innerHTML = "\
+.CodeMirror-hints\
+{\
+	position:absolute;\
+	z-index:10;\
+	overflow:hidden;\
+	list-style:none;\
+	-webkit-box-shadow:2px 3px 5px rgba(0,0,0,.2);\
+	-moz-box-shadow:2px 3px 5px rgba(0,0,0,.2);\
+	box-shadow:2px 3px 5px rgba(0,0,0,.2);\
+	border:1px solid #333;\
+	background:#2a2a2a;\
+	font-size:80%;\
+	font-family:'DejaVu Sans Mono';\
+	max-height:20em;\
+	overflow-y:auto;\
+	margin:0;\
+	padding:4px;\
+}\
+\
+li.CodeMirror-hint-active\
+{\
+	background:#2865c7;\
+	color:#aaa;\
+}";
 doc.getElementsByTagName("head")[0].appendChild(style);
 
 (function(mod) {
